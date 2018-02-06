@@ -13,22 +13,24 @@ var blackboard
 
 func _init():
 	tree = null
-	openNodes = []
+	openNodes = null
 	actor = null
-	blackboard = []
+	blackboard = null
 
 func openNode(node):
+	openNodes.push_back(node)
 	pass
 
 func enterNode(node):
-	openNodes.push_back(node)
+	pass
 
 func tickNode(node):
 	pass
 
 func closeNode(node):
-	if(openNodes.has(node)):
-		openNodes.remove(openNodes.find(node))
+	var nodeIndex = openNodes.find(node)
+	if(nodeIndex >= 0):
+		openNodes.remove(nodeIndex)
 
 func exitNode(node):
 	pass

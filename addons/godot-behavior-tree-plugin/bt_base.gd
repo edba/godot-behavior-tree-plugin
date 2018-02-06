@@ -2,14 +2,22 @@ extends Node
 
 func _execute(tick):
 	_enter(tick)
+	
+	var isAlreadyOpen = tick.blackboard.get('isOpen', tick.tree, self) == true 
 
-	if tick.blackboard.get('isOpen', tick.tree, self) != true:
+	if !isAlreadyOpen:
 		_open(tick)
 
 	var status = _tick(tick)
 
 	if status != ERR_BUSY:
+		if isAlreadyOpen:
+			cleanup(tick)
 		_close(tick)
+	elif !isAlreadyOpen:
+		#presist state only if it wasn't closed on same tick
+		tick.blackboard.set('isOpen', true, tick.tree, self)
+		tick.openNode(self)
 
 	_exit(tick)
 
@@ -20,9 +28,6 @@ func _enter(tick):
 	enter(tick)
 
 func _open(tick):
-	print("opening node")
-	tick.openNode(self)
-	tick.blackboard.set('isOpen', true, tick.tree, self)
 	open(tick)
 
 func _tick(tick):
@@ -30,10 +35,15 @@ func _tick(tick):
 	return tick(tick)
 
 func _close(tick):
-	print("closing node")
+	close(tick)
+
+func cleanup(tick):
 	tick.closeNode(self)
 	tick.blackboard.set('isOpen', false, tick.tree, self)
-	close(tick)
+
+func closeAndCleanup(tick):
+	cleanup(tick)
+	_close(tick)
 
 func _exit(tick):
 	tick.exitNode(self)

@@ -8,25 +8,26 @@ func _ready():
 		var msg = str("ERROR BehaviorTree node at ", get_name(), " has more than 1 child. Should only have one. Returning.")
 		return BehvError.new(self, msg)
 
+var tick = Tick.new()
+var lastOpenNodes = []
+var currentOpenNodes = []
 func tick(actor, blackboard):
-	var tick = Tick.new()
 	tick.tree = self
 	tick.actor = actor
 	tick.blackboard = blackboard
+	tick.openNodes = currentOpenNodes
 
 	var retVal = FAILED
 	for c in get_children():
 		retVal =  c._execute(tick)
 
-	#close nodes from last tick, if needed.
-	var lastOpenNodes = tick.blackboard.get('openNodes', self)
-	var currentOpenNodes = [] + tick.openNodes
-
 	#if node isn't in current, but is in last, close it
 	for node in lastOpenNodes:
 		if(!currentOpenNodes.has(node)):
-			node._close(tick)
+			node.closeAndCleanup(tick)
 
-	#populate the blackboard
-	blackboard.set('openNodes', currentOpenNodes, self)
+	#update last nodes and set current to empty array
+	currentOpenNodes = lastOpenNodes
+	currentOpenNodes.clear()
+	lastOpenNodes = tick.openNodes
 	return retVal
