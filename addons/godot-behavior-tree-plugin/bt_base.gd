@@ -14,9 +14,10 @@ func _execute(tick):
 		if isAlreadyOpen:
 			cleanup(tick)
 		_close(tick)
-	elif !isAlreadyOpen:
-		#presist state only if it wasn't closed on same tick
-		tick.blackboard.set('isOpen', true, tick.tree, self)
+	else:
+		if !isAlreadyOpen:
+			#presist state only if it wasn't closed on same tick
+			tick.blackboard.set('isOpen', true, tick.tree, self)
 		tick.openNode(self)
 
 	_exit(tick)
