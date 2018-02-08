@@ -9,13 +9,14 @@ func _ready():
 		return BehvError.new(self, msg)
 
 var tick = Tick.new()
-var lastOpenNodes = []
-var currentOpenNodes = []
+var lastOpenNodes = {}
+var currentOpenNodes = {}
 func tick(actor, blackboard):
 	tick.tree = self
 	tick.actor = actor
 	tick.blackboard = blackboard
 	tick.openNodes = currentOpenNodes
+	tick.lastOpenNodes = lastOpenNodes
 
 	var retVal = FAILED
 	for c in get_children():
@@ -24,10 +25,10 @@ func tick(actor, blackboard):
 	#if node isn't in current, but is in last, close it
 	for node in lastOpenNodes:
 		if(!currentOpenNodes.has(node)):
-			node.closeAndCleanup(tick)
+			node._close(tick)
 
 	#update last nodes and set current to empty array
-	currentOpenNodes = lastOpenNodes
-	currentOpenNodes.clear()
 	lastOpenNodes = tick.openNodes
+	currentOpenNodes = tick.lastOpenNodes
+	currentOpenNodes.clear()
 	return retVal

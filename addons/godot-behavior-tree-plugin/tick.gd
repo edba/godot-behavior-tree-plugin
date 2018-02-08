@@ -6,6 +6,7 @@ extends Node
 
 var tree
 var openNodes
+var lastOpenNodes
 #var nodeCount
 #var debug
 var actor
@@ -14,12 +15,12 @@ var blackboard
 func _init():
 	tree = null
 	openNodes = null
+	lastOpenNodes = null
 	actor = null
 	blackboard = null
 
 func openNode(node):
-	openNodes.push_back(node)
-	pass
+	openNodes[node] = true
 
 func enterNode(node):
 	pass
@@ -28,9 +29,7 @@ func tickNode(node):
 	pass
 
 func closeNode(node):
-	var nodeIndex = openNodes.find(node)
-	if(nodeIndex >= 0):
-		openNodes.remove(nodeIndex)
+	openNodes.erase(node)
 
 func exitNode(node):
 	pass
